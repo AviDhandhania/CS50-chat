@@ -12,3 +12,5 @@ chat.db
 
 .vscode/
 .idea/
+
+.prettierrc
