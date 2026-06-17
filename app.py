@@ -26,11 +26,12 @@ def index():
 @app.route("/login", methods = ["GET", "POST"])
 def login():
     session.clear()
-
     if request.method == "POST":
         if not request.form.get("username"):
-            return apology
-    return "<h1>Login<h1>"
+            return render_template("todo.html")
+        if not request.form.get("password"):
+            return render_template("todo.html")
+    return 
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():
