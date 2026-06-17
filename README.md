@@ -13,5 +13,7 @@ A real-time chat application built using Flask, SQLite, and Socket.IO.
 ## Installation
 
 pip install -r requirements.txt
+
 python setup.py
+
 python app.py
