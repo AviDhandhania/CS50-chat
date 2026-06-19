@@ -4,7 +4,7 @@ A real-time chat application built with Flask, SQLite, and Socket.IO. Users
 register, log in, create chat rooms, and (once Socket.IO is wired up) message
 each other live without reloading the page.
 
-#### Video Demo: <TO BE ADDED>
+#### Video Demo: TO BE ADDED
 
 ## Features
 
