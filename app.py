@@ -3,11 +3,15 @@ from cs50 import SQL
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # configure application
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "your_secret_key_here"
+app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -19,7 +23,7 @@ db = SQL("sqlite:///chat.db")
 @login_required
 def index():
     rooms = db.execute("SELECT * FROM rooms ORDER BY created_at DESC")
-    return render_template("index.html", rooms=rooms, username = username)
+    return render_template("index.html", rooms=rooms, username=session["username"])
 
 
 @app.route("/register", methods=["GET", "POST"])
