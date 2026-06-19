@@ -14,3 +14,10 @@ chat.db
 .idea/
 
 .prettierrc
+
+# Flask Session Files
+flask_session/
+
+# OS Files
+.DS_Store
+Thumbs.db

@@ -18,9 +18,6 @@ db = SQL("sqlite:///chat.db")
 @app.route("/")
 @login_required
 def index():
-    if not session.get("user_id"):
-        return redirect("/login")
-
     rooms = db.execute("SELECT * FROM rooms ORDER BY name ASC")
     return render_template("index.html", rooms=rooms)
 
@@ -67,6 +64,40 @@ def register():
 
     else:
         return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    session.clear()
+
+    if request.method == "POST":
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if not username:
+            return apology("must provide username")
+
+        if not password:
+            return apology("must provide password")
+
+        rows = db.execute("SELECT * FROM users WHERE username = ?", username)
+
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+            return apology("username and/or password incorrect")
+
+        session["user_id"] = rows[0]["id"]
+
+        return redirect("/")
+
+    else:
+        return render_template("/login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 
 if __name__ == "__main__":
