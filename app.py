@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 import os
 from dotenv import load_dotenv
+from flask_socketio import SocketIO, join_room, emit
 
 load_dotenv()
 
@@ -16,6 +17,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
+socketio = SocketIO(app)
 db = SQL("sqlite:///chat.db")
 
 
@@ -129,5 +131,28 @@ def room(room_id):
     return render_template("room.html", room=rooms[0], messages=messages)
 
 
+@socketio.on("join")
+def on_join(data):
+    join_room(data["room_id"])
+
+
+@socketio.on("send_message")
+def on_send_message(data):
+    room_id = data["room_id"]
+    content = data["content"].strip()
+    if not content:
+        return
+
+    db.execute(
+        "INSERT INTO messages (room_id, user_id, content) VALUES (?, ?, ?)",room_id, session['user_id'], content
+    )
+
+    emit(
+        "new_message",
+        {"username": session["username"], "content": content},
+        room=room_id,
+    )
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)
