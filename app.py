@@ -23,7 +23,7 @@ db = SQL("sqlite:///chat.db")
 @login_required
 def index():
     rooms = db.execute("SELECT * FROM rooms ORDER BY created_at DESC")
-    return render_template("index.html", rooms=rooms, username=session["username"])
+    return render_template("index.html", rooms=rooms)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -44,7 +44,7 @@ def register():
             return apology("passwords must match", 403)
 
         if db.execute("SELECT * FROM users WHERE username=?", username):
-            return apology("username already exists", 402)
+            return apology("username already exists", 400)
 
         user_id = db.execute(
             "INSERT INTO users (username, hash) VALUES (?, ?)",
@@ -62,7 +62,6 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    session.clear()
 
     if request.method == "POST":
 
@@ -86,6 +85,7 @@ def login():
         return redirect("/")
 
     else:
+        session.clear()
         return render_template("login.html")
 
 
@@ -93,6 +93,40 @@ def login():
 def logout():
     session.clear()
     return redirect("/")
+
+
+@app.route("/rooms", methods=["POST"])
+@login_required
+def create_room():
+    name = request.form.get("name", "").strip()
+
+    if not name:
+        return apology("must provide room name", 400)
+
+    rooms = db.execute("SELECT * FROM rooms WHERE name = ?", name)
+    if len(rooms) != 0:
+        return apology("room already exists", 400)
+
+    db.execute(
+        "INSERT INTO rooms (name, created_by) VALUES (?,?)", name, session["user_id"]
+    )
+    return redirect("/")
+
+
+@app.route("/room/<int:room_id>")
+@login_required
+def room(room_id):
+    rooms = db.execute("SELECT * FROM rooms WHERE id = ?", room_id)
+
+    if len(rooms) != 1:
+        return apology("room not found", 400)
+
+    messages = db.execute(
+        """SELECT messages.content, messages.timestamp, users.username FROM messages JOIN users ON messages.user_id = users.id WHERE messages.room_id = ? ORDER BY messages.timestamp""",
+        room_id,
+    )
+
+    return render_template("room.html", room=rooms[0], messages=messages)
 
 
 if __name__ == "__main__":
