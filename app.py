@@ -6,6 +6,7 @@ from helpers import apology, login_required
 import os
 from dotenv import load_dotenv
 from flask_socketio import SocketIO, join_room, emit
+from datetime import datetime
 
 load_dotenv()
 
@@ -144,12 +145,19 @@ def on_send_message(data):
         return
 
     db.execute(
-        "INSERT INTO messages (room_id, user_id, content) VALUES (?, ?, ?)",room_id, session['user_id'], content
+        "INSERT INTO messages (room_id, user_id, content) VALUES (?, ?, ?)",
+        room_id,
+        session["user_id"],
+        content,
     )
 
     emit(
         "new_message",
-        {"username": session["username"], "content": content},
+        {
+            "username": session["username"],
+            "content": content,
+            "timestamp": datetime.utcnow().strftime("%H:%M"),
+        },
         room=room_id,
     )
 

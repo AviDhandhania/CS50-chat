@@ -21,7 +21,11 @@ socket.on('new_message', (data) => {
   name.textContent = data.username;
   const body = document.createElement('div');
   body.textContent = data.content;
+  const time = document.createElement('small');
+  time.className = 'text-muted ms-2';
+  time.textContent = data.timestamp;
   div.appendChild(name);
+  div.appendChild(time);
   div.appendChild(body);
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
