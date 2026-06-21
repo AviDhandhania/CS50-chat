@@ -25,7 +25,7 @@ For this project, AI tools were used only to assist with CSS styling and visual 
 
 - layout.html: CSS styling assistance.
 - static/css/styles.css: CSS styling assistance.
-- README.md: wording and grammer formatting
+- README.md: wording and grammar formatting
 
 All application logic, Flask routes, database design, authentication, Socket.IO
 functionality, and JavaScript chat functionality were implemented by me.
